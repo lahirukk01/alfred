@@ -3,6 +3,11 @@
 import sys
 import numpy as np
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file in project root
+project_root = Path(__file__).parent.parent
+load_dotenv(project_root / ".env")
 
 from .config import (
     CHUNK_DURATION,
