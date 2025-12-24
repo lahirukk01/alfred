@@ -24,6 +24,7 @@ from .cli import parse_args, resolve_file_path
 from .pattern_detector import PatternDetector
 from .instruction_listener import InstructionListener
 from .text2voice import text_to_speech
+from .agents import TextRefinerAgent
 # from .sound_player import play_start_sound, play_stop_sound
 
 
@@ -54,7 +55,9 @@ def transcribe_microphone(
     pattern_detector: PatternDetector,
     instruction_listener: InstructionListener,
     start_pattern,
-    end_pattern
+    end_pattern,
+    text_refiner=None,
+    verbose: bool = False
 ):
     """
     Continuously transcribe audio from microphone with start/end pattern detection.
@@ -106,7 +109,9 @@ def transcribe_microphone(
                             _handle_end_pattern(
                                 instruction_listener,
                                 start_pattern,
-                                end_pattern
+                                end_pattern,
+                                text_refiner,
+                                verbose
                             )
                     else:
                         # Pattern detection mode
@@ -119,7 +124,9 @@ def transcribe_microphone(
                             _handle_end_pattern(
                                 instruction_listener,
                                 start_pattern,
-                                end_pattern
+                                end_pattern,
+                                text_refiner,
+                                verbose
                             )
                             
                 except Exception as e:
@@ -141,7 +148,9 @@ def _handle_start_pattern(instruction_listener: InstructionListener):
 def _handle_end_pattern(
     instruction_listener: InstructionListener,
     start_pattern,
-    end_pattern
+    end_pattern,
+    text_refiner=None,
+    verbose: bool = False
 ):
     """Handle end pattern detection"""
     print(f"\n✓ END pattern detected: '{END_WORD}'")
@@ -155,11 +164,38 @@ def _handle_end_pattern(
             start_pattern,
             end_pattern
         )
-        print("\n" + "=" * 60)
-        print("INSTRUCTION TRANSCRIPTION:")
-        print("-" * 60)
-        print(cleaned_instruction)
-        print("=" * 60 + "\n")
+        
+        # Show raw transcription only in verbose mode
+        if verbose:
+            print("\n" + "=" * 60)
+            print("RAW TRANSCRIPTION:")
+            print("-" * 60)
+            print(cleaned_instruction)
+            print("=" * 60)
+        
+        # Refine the text using the agent if available
+        refined_instruction = cleaned_instruction
+        if text_refiner:
+            try:
+                if verbose:
+                    print("\nRefining text with AI agent...")
+                refined_instruction = text_refiner.refine(cleaned_instruction)
+                print("\n" + "=" * 60)
+                print("REFINED INSTRUCTION:")
+                print("-" * 60)
+                print(refined_instruction)
+                print("=" * 60 + "\n")
+            except Exception as e:
+                print(f"\nWarning: Text refinement failed: {e}")
+                print("Using raw transcription instead.\n")
+                refined_instruction = cleaned_instruction
+        else:
+            # If no refiner, show the cleaned instruction
+            print("\n" + "=" * 60)
+            print("INSTRUCTION:")
+            print("-" * 60)
+            print(cleaned_instruction)
+            print("=" * 60 + "\n")
     else:
         print("\n(No instruction detected)\n")
     
@@ -215,6 +251,15 @@ def main():
     pattern_detector = PatternDetector(pattern_transcriber, start_pattern, end_pattern)
     instruction_listener = InstructionListener(instruction_transcriber, start_pattern, end_pattern)
     
+    # Initialize text refining agent
+    text_refiner = None
+    try:
+        text_refiner = TextRefinerAgent()
+        print("Text refining agent initialized")
+    except ValueError as e:
+        print(f"Warning: {e}")
+        print("Text refining will be skipped")
+    
     # Check if user wants to transcribe file or microphone
     if args.file:
         # Resolve and validate file path
@@ -227,7 +272,9 @@ def main():
             pattern_detector,
             instruction_listener,
             start_pattern,
-            end_pattern
+            end_pattern,
+            text_refiner,
+            args.verbose
         )
 
 

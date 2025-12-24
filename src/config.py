@@ -21,6 +21,6 @@ BLOCKSIZE_DURATION = 0.5  # Audio capture block size in seconds
 BLOCKSIZE = int(SAMPLE_RATE * BLOCKSIZE_DURATION)
 
 # Trigger words/phrases
-START_WORD = "hey alexa"
-END_WORD = "stop alexa"
+START_WORD = "hey alfred"
+END_WORD = "stop alfred"
 

@@ -9,17 +9,17 @@ def create_word_pattern(word: str) -> Pattern:
     Create a case-insensitive regex pattern that ignores commas.
     
     Args:
-        word: The word or phrase to create a pattern for (e.g., "hey alexa")
+        word: The word or phrase to create a pattern for (e.g., "hey alfred")
     
     Returns:
         Compiled regex pattern that matches the word case-insensitively,
         allowing commas and whitespace between words.
     
     Examples:
-        "hey alexa" matches: "hey alexa", "hey, alexa", "Hey, Alexa", etc.
+        "hey alfred" matches: "hey alfred", "hey, alfred", "Hey, Alfred", etc.
     """
     # Build pattern manually: replace spaces with pattern that allows optional commas
-    # Convert "hey alexa" -> "hey[,\s]+alexa" (matches "hey alexa", "hey, alexa", etc.)
+    # Convert "hey alfred" -> "hey[,\s]+alfred" (matches "hey alfred", "hey, alfred", etc.)
     parts = word.split()
     # Join parts with pattern that matches comma or whitespace
     pattern = r'[,\s]+'.join(re.escape(part) for part in parts)
