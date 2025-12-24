@@ -71,7 +71,7 @@ class OpenAITranscriber(TranscriberBase):
                 segments = []
                 if hasattr(transcript, 'segments') and transcript.segments:
                     for seg in transcript.segments:
-                        text = seg.get('text', '').strip()
+                        text = getattr(seg, 'text', '').strip()
                         if text:
                             segments.append(text)
                             if new_segment_callback:
@@ -100,7 +100,7 @@ class OpenAITranscriber(TranscriberBase):
             segments = []
             if hasattr(transcript, 'segments') and transcript.segments:
                 for seg in transcript.segments:
-                    text = seg.get('text', '').strip()
+                    text = getattr(seg, 'text', '').strip()
                     if text:
                         segments.append(text)
                         if new_segment_callback:

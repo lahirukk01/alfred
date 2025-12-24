@@ -21,9 +21,10 @@ from .transcriber import WhisperTranscriber
 from .openai_transcriber import OpenAITranscriber
 from .pattern_matcher import create_patterns
 from .cli import parse_args, resolve_file_path
-from .sound_player import play_start_sound, play_stop_sound
 from .pattern_detector import PatternDetector
 from .instruction_listener import InstructionListener
+from .text2voice import text_to_speech
+# from .sound_player import play_start_sound, play_stop_sound
 
 
 def filter_command_texts(text: str, start_pattern, end_pattern) -> str:
@@ -132,7 +133,7 @@ def transcribe_microphone(
 def _handle_start_pattern(instruction_listener: InstructionListener):
     """Handle start pattern detection"""
     print(f"\n✓ START pattern detected: '{START_WORD}'")
-    play_start_sound()
+    text_to_speech("Hello Lahiru, I'm Alfred. How can I help you today?")
     instruction_listener.start_listening()
     print("→ Listening for instructions...")
 
@@ -144,7 +145,7 @@ def _handle_end_pattern(
 ):
     """Handle end pattern detection"""
     print(f"\n✓ END pattern detected: '{END_WORD}'")
-    play_stop_sound()
+    text_to_speech("Processing your request...")
     
     # Get and clean the instruction
     if instruction_listener.instruction_buffer:
